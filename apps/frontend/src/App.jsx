@@ -123,16 +123,24 @@
 
 
 
-
-import AnalyzePage from './pages/Analyze' // Pastikan kamu sudah buat file ini
-import './style/index.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import AnalyzePage from "./pages/Analyze";
+import "./style/index.css";
 
 function App() {
   return (
-    <div className="App">
-      <AnalyzePage />
-    </div>
-  )
+    <Router>
+      <Routes>
+        {/* Halaman Utama (Home) */}
+        <Route path="/" element={<Home />} />
+        
+        {/* Halaman Analisis */}
+        <Route path="/analyze" element={<AnalyzePage />} />
+
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
