@@ -1,76 +1,118 @@
-// import React from 'react';
-// import Button from '../Button';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Button from "../Button";
+import AuthModal from "../AuthModal";
 
-// const Navbar = () => {
-//   return (
-//     <nav className="flex items-center justify-between px-10 py-5 bg-white border-b border-gray-100">
-//       <div className="text-[#004E98] font-bold text-2xl tracking-tight">
-//         DermaVisio
-//       </div>
-      
-//       <div className="flex gap-8 text-gray-600 font-medium">
-//         <a href="#" className="text-[#004E98] border-b-2 border-[#004E98]">Home</a>
-//         <a href="#" className="hover:text-[#004E98]">Analyze</a>
-//         <a href="#" className="hover:text-[#004E98]">About</a>
-//       </div>
+const Navbar = ({ isLoggedIn, onLogout }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
-//       <div className="flex items-center gap-4">
-//         <Button className="px-5 py-2">Sign In</Button>
-//         <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-//           <span className="text-gray-600">👤</span>
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// };
+  // Cek apakah user sedang berada di halaman tertentu
+  const isProfilePage = location.pathname === "/profile";
+  const isAuthPage = location.pathname === "/signin" || location.pathname === "/signup";
 
-// export default Navbar;
+  /**
+   * Fungsi untuk memproteksi halaman Analyze, About, dan Profile.
+   * Jika belum login, tampilkan modal peringatan.
+   */
+  const handleProtectedClick = (targetPath) => {
+    if (!isLoggedIn) {
+      setShowAuthModal(true);
+    } else {
+      navigate(targetPath);
+    }
+  };
 
-
-
-
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom'; // Tambahkan ini
-import Button from '../Button';
-
-const Navbar = () => {
-  // Helper class untuk NavLink agar tidak mengulang kode yang sama
-  const navLinkStyles = ({ isActive }) => 
-    isActive 
-      ? "text-[#004E98] border-b-2 border-[#004E98] pb-1 font-bold" 
-      : "text-gray-600 hover:text-[#004E98] border-b-2 border-transparent pb-1 transition-all";
+  /**
+   * Helper untuk memberikan styling pada menu yang aktif (Active Link)
+   */
+  const getMenuClass = (path) => {
+    const base = "transition-all pb-1 cursor-pointer ";
+    const active = "text-[#004E98] border-b-2 border-[#004E98] font-bold";
+    const inactive = "text-gray-600 hover:text-[#004E98] border-b-2 border-transparent";
+    
+    return location.pathname === path ? base + active : base + inactive;
+  };
 
   return (
-    <nav className="flex items-center justify-between px-10 py-5 bg-white border-b border-gray-100">
-      {/* Logo klikable menuju Home */}
-      <Link to="/" className="text-[#004E98] font-bold text-2xl tracking-tight">
-        DermaVisio
-      </Link>
-      
-      <div className="flex gap-8 font-medium">
-        {/* Menggunakan NavLink untuk deteksi halaman aktif */}
-        <NavLink to="/" className={navLinkStyles}>
-          Home
-        </NavLink>
-        
-        <NavLink to="/analyze" className={navLinkStyles}>
-          Analyze
-        </NavLink>
-        
-        {/* Menu About (jika belum ada pagenya, sementara ke # atau buat route baru) */}
-        <NavLink to="/about" className={navLinkStyles}>
-          About
-        </NavLink>
-      </div>
+    <>
+      <nav className="flex items-center justify-between px-10 py-5 bg-white border-b border-gray-100">
+        {/* LOGO: Klikable menuju Home, kecuali saat di halaman Auth */}
+        {isAuthPage ? (
+          <div className="text-[#004E98] font-bold text-2xl tracking-tight cursor-default">
+            DermaVisio
+          </div>
+        ) : (
+          <Link to="/" className="text-[#004E98] font-bold text-2xl tracking-tight">
+            DermaVisio
+          </Link>
+        )}
 
-      <div className="flex items-center gap-4">
-        <Button className="px-5 py-2">Sign In</Button>
-        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer overflow-hidden border border-gray-100">
-          {/* Anda bisa mengganti ini dengan ikon dari Lucide nanti */}
-          <span className="text-xl">👤</span>
+        {/* MENU TENGAH: Disembunyikan jika di halaman Profile atau Auth */}
+        {!isProfilePage && !isAuthPage && (
+          <div className="flex gap-8 font-medium">
+            <Link to="/" className={getMenuClass("/")}>
+              Home
+            </Link>
+
+            {/* Menu Analyze & About diproteksi login */}
+            <button
+              onClick={() => handleProtectedClick("/analyze")}
+              className={getMenuClass("/analyze")}
+            >
+              Analyze
+            </button>
+
+            <button
+              onClick={() => handleProtectedClick("/about")}
+              className={getMenuClass("/about")}
+            >
+              About
+            </button>
+          </div>
+        )}
+
+        {/* BAGIAN KANAN: Login/Logout & Profil */}
+        <div className="flex items-center gap-4">
+          {!isAuthPage && (
+            isLoggedIn ? (
+              <Button
+                onClick={onLogout}
+                className="bg-red-600 hover:bg-red-700 px-5 py-2 text-white rounded-lg transition-colors"
+              >
+                Logout
+              </Button>
+            ) : (
+              <Button
+                onClick={() => navigate("/signin")}
+                className="bg-[#004E98] hover:bg-blue-800 px-5 py-2 text-white rounded-lg transition-colors"
+              >
+                Sign In
+              </Button>
+            )
+          )}
+
+          {/* IKON PROFIL: Diproteksi login */}
+          <button
+            onClick={() => handleProtectedClick("/profile")}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+              location.pathname === "/profile"
+                ? "ring-2 ring-[#004E98] bg-blue-50"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          >
+            <span className="text-gray-600">👤</span>
+          </button>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Modal yang muncul jika user belum login tapi mencoba akses menu proteksi */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
+    </>
   );
 };
 
