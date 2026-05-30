@@ -274,7 +274,7 @@ export default function AnalyzePage() {
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />
 
-      <main className="flex-grow container mx-auto px-6 py-12 max-w-6xl">
+      <main className="grow container mx-auto px-6 py-12 max-w-6xl">
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-10 md:p-14 mb-8">
           
           {/* HEADER */}
@@ -328,7 +328,7 @@ export default function AnalyzePage() {
                 </ul>
               </div>
               {/* Gunakan h-[450px] atau ganti h-112 jika ingin mengikuti standar Tailwind */}
-              <div className="w-full lg:w-2/3 bg-white border border-slate-200 rounded-2xl p-6 h-[450px] relative">
+              <div className="w-full lg:w-2/3 bg-white border border-slate-200 rounded-2xl p-6 h-112  relative">
                 <div className="relative w-full h-full rounded-xl overflow-hidden bg-slate-900">
                   <Cropper
                     image={image}
@@ -373,7 +373,7 @@ export default function AnalyzePage() {
                       <h2 className="text-3xl font-bold text-slate-900">{result.condition}</h2>
                       <p className="text-slate-500 text-lg">{result.description}</p>
                     </div>
-                    <div className="bg-slate-50 rounded-2xl p-8 text-center min-w-[200px]">
+                    <div className="bg-slate-50 rounded-2xl p-8 text-center min-w-48]">
                       <p className="text-5xl font-black text-teal-600">{result.confidence}%</p>
                     </div>
                   </div>
