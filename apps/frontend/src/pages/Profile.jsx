@@ -50,8 +50,8 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} />
+    <div className="min-h-screen bg-[#F9FAFB] flex flex-col font-sans">
+      {/* <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} /> */}
 
       <main className="flex-grow max-w-5xl mx-auto w-full px-10 py-8">
         {/* Tombol Keluar */}

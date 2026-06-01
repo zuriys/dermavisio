@@ -42,7 +42,7 @@ const SignInPage = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex flex-col font-sans">
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="flex-grow flex flex-col items-center justify-center px-6 py-12">
         <h1 className="text-4xl font-bold text-[#091E42] mb-10 text-center">
           Sign In
