@@ -70,16 +70,53 @@ const SignUpPage = ({ onLogin }) => {
         "Min 8 chars, must include uppercase, lowercase, number, and special character";
     }
 
+    console.log("Daftar Error Saat Ini:", newErrors);
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (validate()) {
-      onLogin();
-      console.log("Sign Up Success:", formData);
-      navigate("/"); // Redirect ke Home
+      try {
+        // Helper: Ubah DD/MM/YYYY ke YYYY-MM-DD agar MySQL tidak error
+        const [day, month, year] = formData.dob.split("/");
+        const formattedDate = `${year}-${month}-${day}`; // Sequelize butuh YYYY-MM-DD
+
+        const payload = {
+          nama: formData.username, // Sesuai Service
+          email: formData.email,
+          password: formData.password,
+          gender: formData.gender,
+          tanggal_lahir: formattedDate, // Sesuai Service
+          telepon: formData.phone, // Sesuai Service
+        };
+
+        const response = await fetch(
+          "http://localhost:5000/api/auth/register",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          },
+        );
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert("Sign Up Berhasil! Silakan Sign In.");
+          navigate("/signin");
+        } else {
+          alert("Gagal: " + result.message);
+        }
+      } catch (error) {
+        console.error("Error Koneksi:", error);
+        alert("Gagal terhubung ke Backend Express.");
+      }
     }
   };
 

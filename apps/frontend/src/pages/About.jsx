@@ -16,7 +16,7 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
-      <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} />
+      {/* <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} /> */}
 
       <main className="flex-grow">
         {/* About Header Section */}
