@@ -4,14 +4,87 @@ import Footer from "../components/global/Footer";
 import FeatureCard from "../components/cards/FeatureCard";
 import Button from "../components/global/Button";
 
+// Import Assets Tim (Pastikan file ada di src/assets/)
+import rupaImg from "../../assets/rupa.jpg";
+import albertImg from "../../assets/albert.jpg";
+import joImg from "../../assets/jo.jpg";
+import occaImg from "../../assets/occa.jpg";
+import gussakahImg from "../../assets/gussakah.jpg";
+import dianImg from "../../assets/dian.jpg";
+
+import melImg from "../../assets/mel.png";
+import bccImg from "../../assets/bcc.png";
+import akiecImg from "../../assets/akiec.png";
+import bklImg from "../../assets/bkl.png";
+import nvImg from "../../assets/nv.png";
+import vascImg from "../../assets/vasc.png";
+import dfImg from "../../assets/df.png";
+
 const AboutPage = ({ isLoggedIn, onLogout }) => {
   const teamMembers = [
-    { name: "Ni Luh Rupa Sri Astuti", role: "AI Engineer" },
-    { name: "Benedictus Albert Effendi", role: "AI Engineer" },
-    { name: "Jonathan Federico Tantoro", role: "Data Scientist" },
-    { name: "I Gede Abhijana Prayata W.", role: "Data Scientist" },
-    { name: "I Gusti Agus Sakah Aditia", role: "FullStack Web Developer" },
-    { name: "Dian Resvina", role: "FullStack Web Developer" },
+    { name: "Ni Luh Rupa Sri Astuti", role: "AI Engineer", image: rupaImg },
+    {
+      name: "Benedictus Albert Effendi",
+      role: "AI Engineer",
+      image: albertImg,
+    },
+    { name: "Jonathan Federico Tantoro", role: "Data Scientist", image: joImg },
+    {
+      name: "I Gede Abhijana Prayata W.",
+      role: "Data Scientist",
+      image: occaImg,
+    },
+    {
+      name: "I Gusti Agus Sakah Aditia",
+      role: "FullStack Web Developer",
+      image: gussakahImg,
+    },
+    { name: "Dian Resvina", role: "FullStack Web Developer", image: dianImg },
+  ];
+
+  const skinLesions = [
+    {
+      id: "MEL",
+      name: "Melanoma",
+      image: melImg,
+      desc: "Jenis kanker kulit paling berbahaya yang muncul pada melanosit. Deteksi dini sangat krusial untuk keberhasilan pengobatan.",
+    },
+    {
+      id: "BCC",
+      name: "Basal Cell Carcinoma",
+      image: bccImg,
+      desc: "Bentuk kanker kulit yang paling umum. Biasanya tumbuh lambat dan jarang menyebar, namun harus segera ditangani.",
+    },
+    {
+      id: "AKIEC",
+      name: "Actinic Keratosis",
+      image: akiecImg,
+      desc: "Lesi pra-kanker yang kasar dan bersisik, biasanya disebabkan oleh paparan sinar matahari bertahun-tahun.",
+    },
+    {
+      id: "BKL",
+      name: "Benign Keratosis",
+      image: bklImg,
+      desc: "Pertumbuhan kulit jinak (non-kanker) yang sering muncul seiring bertambahnya usia, mirip dengan kutil.",
+    },
+    {
+      id: "NV",
+      name: "Melanocytic Nevi",
+      image: nvImg,
+      desc: "Tahi lalat biasa yang terbentuk dari melanosit. Sebagian besar jinak, namun perlu dipantau perubahannya.",
+    },
+    {
+      id: "VASC",
+      name: "Vascular Lesions",
+      image: vascImg,
+      desc: "Kondisi kulit yang melibatkan pembuluh darah, seperti angioma atau bercak merah akibat kelainan vaskular.",
+    },
+    {
+      id: "DF",
+      name: "Dermatofibroma",
+      image: dfImg,
+      desc: "Pertumbuhan kulit fibrosa jinak yang biasanya muncul sebagai benjolan kecil dan keras di kaki atau lengan.",
+    },
   ];
 
   return (
@@ -19,81 +92,111 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
       <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} />
 
       <main className="flex-grow">
-        {/* About Header Section */}
+        {/* Header */}
         <section className="container mx-auto px-10 py-16 text-center">
           <h1 className="text-4xl font-extrabold text-[#091E42] mb-8">
             About <span className="text-[#004E98]">DermaVisio</span>
           </h1>
-          <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl border border-gray-50 shadow-sm text-sm text-gray-500 leading-relaxed italic">
+          <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl border border-gray-50 shadow-sm text-sm text-gray-500 italic">
             DermaVisio adalah aplikasi berbasis Artificial Intelligence yang
             dirancang untuk membantu deteksi dini lesi kulit melalui analisis
-            citra dermatoskopi. Sistem ini memanfaatkan teknologi Convolutional
-            Neural Network (CNN) untuk mengklasifikasikan berbagai jenis lesi
-            kulit secara otomatis. Dengan antarmuka web yang sederhana dan
-            responsif, DermaVisio bertujuan meningkatkan kesadaran masyarakat
-            terhadap pentingnya pemeriksaan kulit sejak dini secara lebih mudah
-            dan cepat.
+            citra dermatoskopi menggunakan teknologi Convolutional Neural
+            Network (CNN).
           </div>
         </section>
 
-        {/* Feature Cards Section */}
-        <section className="container mx-auto px-10 mb-20">
+        {/* Feature Cards */}
+        <section className="container mx-auto px-10 mb-16">
           <div className="grid grid-cols-3 gap-6">
             <FeatureCard
               icon="⚠️"
               title="Educational Use Only"
-              description="The AI provides screening suggestions, not final medical diagnoses."
+              description="AI ini memberikan saran untuk pemeriksaan awal, bukan diagnosis medis akhir."
             />
             <FeatureCard
               icon="📈"
               title="95%+ Accuracy"
-              description="Validated against professional dermatological datasets and benchmarks."
+              description="Telah diverifikasi berdasarkan kumpulan data dan tolak ukur dermatologi profesional."
             />
             <FeatureCard
               icon="🛡️"
               title="Secure & Private"
-              description="End-to-end encryption for all uploaded images and patient data."
+              description="Enkripsi end-to-end untuk semua gambar yang diunggah dan data pasien."
             />
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section className="py-20 text-center">
+        {/* NEW SECTION: 7 Klasifikasi Lesi Kulit (Sesuai input_file_11.png) */}
+        <section className="container mx-auto px-10 mb-20 space-y-6">
+          <h2 className="text-center text-2xl font-bold text-[#091E42] mb-10">
+            Klasifikasi Lesi Kulit
+          </h2>
+          {skinLesions.map((lesion, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-8 max-w-5xl mx-auto group"
+            >
+              {/* Box Gambar Penyakit */}
+              <div className="w-24 h-24 shrink-0 bg-[#F9FAFB] rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
+                <img
+                  src={lesion.image}
+                  alt={lesion.name}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/150?text=No+Img";
+                  }}
+                />
+              </div>
+
+              {/* Box Informasi */}
+              <div className="flex-1 bg-white p-6 rounded-xl border border-gray-100 shadow-sm transition-all group-hover:border-[#004E98]/30 group-hover:shadow-md">
+                <h4 className="font-bold text-[#004E98] mb-1">
+                  {lesion.id}: {lesion.name}
+                </h4>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  {lesion.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* How It Works */}
+        <section className="py-20 text-center bg-[#F9FBFF]">
           <h2 className="text-3xl font-bold text-[#091E42] mb-4">
             How it Works
           </h2>
           <p className="text-gray-400 text-sm mb-16">
-            Three simple steps to professional-grade skin analysis from the
-            comfort of your home.
+            Tiga langkah mudah untuk analisis kulit berkualitas profesional.
           </p>
-
           <div className="flex justify-center items-start max-w-5xl mx-auto relative mb-12">
             {[
               {
                 step: "01",
                 title: "Upload Image",
                 icon: "📷",
-                desc: "Securely upload a clear photo of the skin area under natural lighting.",
+                desc: "Unggah foto area kulit yang jelas dengan aman.",
               },
               {
                 step: "02",
                 title: "AI Processing",
                 icon: "🧠",
-                desc: "Our CNN architecture analyzes patterns at a microscopic level.",
+                desc: "Arsitektur CNN kami menganalisis pola pada level mikroskopik.",
               },
               {
                 step: "03",
                 title: "Get Results",
                 icon: "📋",
-                desc: "Receive a detailed screening report with confidence scores.",
+                desc: "Dapatkan laporan skrining terperinci beserta skor kepercayaan.",
               },
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="flex flex-col items-center w-1/3 px-4 relative z-10"
+                className="flex flex-col items-center w-1/3 px-4 z-10"
               >
-                <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 shadow-sm flex items-center justify-center mb-4">
-                  <span className="text-2xl text-[#004E98]">{item.icon}</span>
+                <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 shadow-sm flex items-center justify-center mb-4 text-[#004E98] text-2xl">
+                  {item.icon}
                 </div>
                 <p className="text-[10px] font-bold text-[#004E98] uppercase tracking-widest mb-1">
                   Step {item.step}
@@ -106,56 +209,41 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
                 </p>
               </div>
             ))}
-            <div className="absolute top-8 left-[15%] right-[15%] h-[1px] border-t border-dashed border-gray-200 -z-0"></div>
+            <div className="absolute top-8 left-[15%] right-[15%] h-[1px] border-t border-dashed border-gray-200"></div>
           </div>
-
           <Button className="mx-auto px-10 bg-[#004E98]">
             Selengkapnya <span className="ml-2">→</span>
           </Button>
         </section>
 
-        <hr className="border-gray-100 my-10" />
-
-        {/* Meet The Team Section */}
-        <section className="container mx-auto px-10 py-16">
+        {/* Meet The Team */}
+        <section className="container mx-auto px-10 py-24">
           <h2 className="text-3xl font-bold text-[#091E42] text-center mb-16">
             Meet The Team
           </h2>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {teamMembers.map((member, index) => (
               <div
                 key={index}
-                className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all"
               >
                 <div className="relative aspect-[4/3] bg-[#F9FAFB] rounded-lg border border-dashed border-[#D1D9E6] flex items-center justify-center mb-4 overflow-hidden group">
-                  {/* Ikon Placeholder Foto */}
-                  <div className="text-[#004E98]/20 group-hover:scale-110 transition-transform">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-12 w-12"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* LinkedIn Icon Overlay */}
-                  <div className="absolute bottom-3 right-3 bg-[#4B5563] p-1.5 rounded text-white cursor-pointer hover:bg-[#004E98] transition-colors">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    onError={(e) => {
+                      e.target.src =
+                        "https://via.placeholder.com/400x300?text=No+Photo";
+                    }}
+                  />
+                  <div className="absolute bottom-3 right-3 bg-[#4B5563] p-1.5 rounded text-white cursor-pointer hover:bg-[#004E98]">
                     <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                       <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                     </svg>
                   </div>
                 </div>
-
-                <div className="px-1 pb-2">
+                <div className="px-1">
                   <h4 className="font-bold text-[#091E42] text-sm">
                     {member.name}
                   </h4>
