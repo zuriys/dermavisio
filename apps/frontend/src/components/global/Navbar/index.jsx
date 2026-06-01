@@ -1,41 +1,3 @@
-/*import React from "react";
-import Button from "../Button";
-import { Link } from "react-router-dom";
-
-const Navbar = () => {
-  return (
-    <nav className="flex items-center justify-between px-10 py-5 bg-white border-b border-gray-100">
-      <div className="text-[#004E98] font-bold text-2xl tracking-tight">
-        DermaVisio
-      </div>
-
-      <div className="flex gap-8 text-gray-600 font-medium">
-        <a href="#" className="text-[#004E98] border-b-2 border-[#004E98]">
-          Home
-        </a>
-        <a href="#" className="hover:text-[#004E98]">
-          Analyze
-        </a>
-        <a href="#" className="hover:text-[#004E98]">
-          About
-        </a>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <Button className="px-5 py-2">Sign In</Button>
-        <Link
-          to="/profile"
-          className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
-        >
-          <span className="text-gray-600">👤</span>
-        </Link>
-      </div>
-    </nav>
-  );
-};
-
-export default Navbar;*/
-
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "../Button";
@@ -46,61 +8,64 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
+  // Cek apakah user sedang berada di halaman tertentu
   const isProfilePage = location.pathname === "/profile";
-  const isAuthPage =
-    location.pathname === "/signin" || location.pathname === "/signup";
+  const isAuthPage = location.pathname === "/signin" || location.pathname === "/signup";
 
-  // Fungsi pengecekan akses
-  const handleProtectedClick = (e, targetPath) => {
+  /**
+   * Fungsi untuk memproteksi halaman Analyze, About, dan Profile.
+   * Jika belum login, tampilkan modal peringatan.
+   */
+  const handleProtectedClick = (targetPath) => {
     if (!isLoggedIn) {
-      e.preventDefault();
       setShowAuthModal(true);
     } else {
       navigate(targetPath);
     }
   };
 
-  // Helper untuk class menu aktif
+  /**
+   * Helper untuk memberikan styling pada menu yang aktif (Active Link)
+   */
   const getMenuClass = (path) => {
-    const base = "hover:text-[#004E98] transition-colors pb-1 ";
+    const base = "transition-all pb-1 cursor-pointer ";
     const active = "text-[#004E98] border-b-2 border-[#004E98] font-bold";
-    return location.pathname === path ? base + active : base;
+    const inactive = "text-gray-600 hover:text-[#004E98] border-b-2 border-transparent";
+    
+    return location.pathname === path ? base + active : base + inactive;
   };
 
   return (
     <>
       <nav className="flex items-center justify-between px-10 py-5 bg-white border-b border-gray-100">
-        {/* Logo */}
+        {/* LOGO: Klikable menuju Home, kecuali saat di halaman Auth */}
         {isAuthPage ? (
           <div className="text-[#004E98] font-bold text-2xl tracking-tight cursor-default">
             DermaVisio
           </div>
         ) : (
-          <Link
-            to="/"
-            className="text-[#004E98] font-bold text-2xl tracking-tight"
-          >
+          <Link to="/" className="text-[#004E98] font-bold text-2xl tracking-tight">
             DermaVisio
           </Link>
         )}
 
-        {/* Menu Navigasi Tengah */}
+        {/* MENU TENGAH: Disembunyikan jika di halaman Profile atau Auth */}
         {!isProfilePage && !isAuthPage && (
-          <div className="flex gap-8 text-gray-600 font-medium">
+          <div className="flex gap-8 font-medium">
             <Link to="/" className={getMenuClass("/")}>
               Home
             </Link>
 
-            {/* Gunakan onClick untuk proteksi */}
+            {/* Menu Analyze & About diproteksi login */}
             <button
-              onClick={(e) => handleProtectedClick(e, "/analyze")}
+              onClick={() => handleProtectedClick("/analyze")}
               className={getMenuClass("/analyze")}
             >
               Analyze
             </button>
 
             <button
-              onClick={(e) => handleProtectedClick(e, "/about")}
+              onClick={() => handleProtectedClick("/about")}
               className={getMenuClass("/about")}
             >
               About
@@ -108,27 +73,29 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
           </div>
         )}
 
+        {/* BAGIAN KANAN: Login/Logout & Profil */}
         <div className="flex items-center gap-4">
-          {!isAuthPage &&
-            (isLoggedIn ? (
+          {!isAuthPage && (
+            isLoggedIn ? (
               <Button
                 onClick={onLogout}
-                className="bg-red-600 hover:bg-red-700 px-5 py-2"
+                className="bg-red-600 hover:bg-red-700 px-5 py-2 text-white rounded-lg transition-colors"
               >
                 Logout
               </Button>
             ) : (
               <Button
                 onClick={() => navigate("/signin")}
-                className="bg-[#004E98] px-5 py-2"
+                className="bg-[#004E98] hover:bg-blue-800 px-5 py-2 text-white rounded-lg transition-colors"
               >
                 Sign In
               </Button>
-            ))}
+            )
+          )}
 
-          {/* Ikon Profil */}
+          {/* IKON PROFIL: Diproteksi login */}
           <button
-            onClick={(e) => handleProtectedClick(e, "/profile")}
+            onClick={() => handleProtectedClick("/profile")}
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
               location.pathname === "/profile"
                 ? "ring-2 ring-[#004E98] bg-blue-50"
@@ -140,6 +107,7 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
         </div>
       </nav>
 
+      {/* Modal yang muncul jika user belum login tapi mencoba akses menu proteksi */}
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
