@@ -1,19 +1,148 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/global/Navbar";
 import Footer from "../components/global/Footer";
 import Button from "../components/global/Button";
 
 const ProfilePage = ({ isLoggedIn, onLogout }) => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  // --- STATE ---
+  const [userData, setUserData] = useState({
+    nama: "",
+    email: "",
+    gender: "",
+    tanggal_lahir: "",
+    telepon: "",
+    foto: null,
+  });
+  const [profilePreview, setProfilePreview] = useState(null); // Untuk tampilan sementara
+  const [selectedFile, setSelectedFile] = useState(null); // File asli untuk diupload
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // --- 1. AMBIL DATA DARI DATABASE (MOUNT) ---
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "http://localhost:5001/api/user/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        if (response.data.status === "success") {
+          const data = response.data.data;
+          setUserData(data);
+
+          // JIKA ADA DATA FOTO, BUAT URL LENGKAPNYA
+          if (data.foto) {
+            // Pastikan path-nya sesuai dengan route static di backend (/uploads/profiles/)
+            setProfilePreview(
+              `http://localhost:5001/uploads/profiles/${data.foto}`,
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Gagal ambil profil:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchProfileData();
+    } else {
+      setLoading(false);
+    }
+  }, [isLoggedIn]);
+
+  // --- 2. LOGIKA PILIH FOTO ---
+  const handleUpdatePhotoClick = () => fileInputRef.current.click();
+
+  const onFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file); // Simpan file asli
+      const reader = new FileReader();
+      reader.onloadend = () => setProfilePreview(reader.result); // Tampilkan preview
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setProfilePreview(null);
+    setSelectedFile(null);
+    setUserData({ ...userData, foto: null });
+  };
+
+  // --- 3. SIMPAN PERUBAHAN (NAMA & FOTO) KE DATABASE ---
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+
+      formData.append("nama", userData.nama);
+      // Jika ada file baru yang dipilih, masukkan ke FormData
+      if (selectedFile) {
+        formData.append("foto", selectedFile);
+      }
+
+      const response = await axios.put(
+        "http://localhost:5001/api/user/profile",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      if (response.data.status === "success") {
+        alert("Profil berhasil diperbarui!");
+        // Update state lokal dengan data terbaru dari server
+        setUserData(response.data.data);
+      }
+    } catch (error) {
+      alert(
+        "Gagal menyimpan: " + (error.response?.data?.message || error.message),
+      );
+    }
+  };
+
+  // --- 4. HAPUS RIWAYAT ANALISIS ---
+  const deleteHistoryItem = async (id) => {
+    if (!window.confirm("Hapus riwayat ini?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5001/api/user/history/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Filter state lokal agar langsung hilang dari layar
+      setHistory(history.filter((item) => item.id_prediksi !== id));
+    } catch (error) {
+      alert("Gagal menghapus riwayat");
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center font-sans">
+        Loading Profile...
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex flex-col font-sans">
-      {/* <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} /> */}
-
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-grow max-w-5xl mx-auto w-full px-10 py-8">
-        {/* Tombol Keluar - Berada di bawah logo navbar */}
-        <div className="mb-8">
+        {/* Tombol Kembali */}
+        <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-gray-500 hover:text-[#004E98] font-semibold transition-colors"
@@ -36,56 +165,79 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
           </button>
         </div>
 
-        {/* Header Section */}
-        <header className="mb-10">
-          <h1 className="text-3xl font-bold text-[#091E42] mb-2">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-[#091E42] mb-1">
             Personal Information
           </h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-400 text-sm">
             Manage your basic identity information and contact details.
           </p>
         </header>
 
         {/* Profile Picture Card */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 mb-8 flex items-center gap-8">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 mb-6 flex items-center gap-8">
           <div className="relative">
-            <div className="w-24 h-24 bg-[#D1D5DB] rounded-xl flex items-center justify-center overflow-hidden">
-              <div className="w-full h-full bg-gray-300"></div>
-              <div className="absolute -bottom-1 -right-1 bg-[#004E98] p-2 rounded-lg text-white shadow-lg border-2 border-white">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </div>
+            <div className="w-24 h-24 bg-[#D1D5DB] rounded-xl flex items-center justify-center overflow-hidden border border-gray-200">
+              {profilePreview ? (
+                <img
+                  src={profilePreview}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-300"></div>
+              )}
             </div>
+            <div
+              className="absolute -bottom-2 -right-2 bg-[#004E98] p-2 rounded-lg text-white border-2 border-white shadow-md cursor-pointer hover:bg-[#003B73]"
+              onClick={handleUpdatePhotoClick}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={onFileChange}
+            />
           </div>
 
           <div className="flex-1">
-            <h3 className="font-bold text-gray-800 mb-1">Profile Picture</h3>
-            <p className="text-sm text-gray-500 mb-4">
+            <h3 className="font-bold text-[#091E42] mb-1">Profile Picture</h3>
+            <p className="text-xs text-gray-400 mb-4">
               Upload a clear photo of your face for identity verification.
             </p>
             <div className="flex gap-3">
-              <Button className="py-2 px-5 text-sm">Update Photo</Button>
               <Button
+                onClick={handleUpdatePhotoClick}
+                className="py-2 px-5 text-xs h-auto bg-[#004E98]"
+              >
+                Update Photo
+              </Button>
+              <Button
+                onClick={handleRemovePhoto}
                 variant="outline"
-                className="py-2 px-5 text-sm border-gray-200 text-gray-700"
+                className="py-2 px-5 text-xs h-auto border-gray-200 text-gray-600"
               >
                 Remove
               </Button>
@@ -93,18 +245,21 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
           </div>
         </div>
 
-        {/* Information Form Card */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8">
-          <form className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
+        {/* Form Card */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 mb-10">
+          <form className="space-y-6" onSubmit={handleSaveChanges}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                   Full Name
                 </label>
                 <input
                   type="text"
-                  defaultValue="Dr. Elena Rodriguez"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none"
+                  value={userData.nama || ""} // SESUAIKAN DENGAN NAMA KOLOM DB
+                  onChange={(e) =>
+                    setUserData({ ...userData, nama: e.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none text-sm"
                 />
               </div>
               <div>
@@ -113,25 +268,24 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
                 </label>
                 <input
                   type="text"
-                  defaultValue="05/12/1988"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none"
+                  value={userData.tanggal_lahir || ""} // SESUAIKAN DENGAN TANGGAL_LAHIR
+                  readOnly
+                  className="w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 text-sm outline-none"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
-              {/* GENDER DROPDOWN DI PROFILE */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                   Gender
                 </label>
-                <select
-                  defaultValue="Female"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none text-sm bg-white cursor-pointer transition-all"
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
+                <input
+                  type="text"
+                  value={userData.gender || ""} // SESUAIKAN DENGAN GENDER
+                  readOnly
+                  className="w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 text-sm outline-none"
+                />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
@@ -139,8 +293,9 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
                 </label>
                 <input
                   type="text"
-                  defaultValue="+1 (555) 012-3456"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none"
+                  value={userData.telepon || ""} // SESUAIKAN DENGAN TELEPON
+                  readOnly
+                  className="w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 text-sm outline-none"
                 />
               </div>
             </div>
@@ -150,20 +305,10 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
                 Email Address
               </label>
               <input
-                type="email"
-                defaultValue="elena.rodriguez@example.com"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                defaultValue="••••••••••••"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none text-gray-400"
+                type="text"
+                value={userData.email || ""} // SESUAIKAN DENGAN EMAIL
+                readOnly
+                className="w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 text-sm outline-none"
               />
             </div>
 
@@ -171,16 +316,70 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="text-gray-600 font-bold hover:text-gray-800 transition-colors"
+                className="text-gray-600 font-bold hover:text-gray-800 text-sm"
               >
                 Cancel
               </button>
-              <Button type="submit" className="px-10">
+              <Button type="submit" className="px-10 bg-[#004E98]">
                 Save Changes
               </Button>
             </div>
           </form>
         </div>
+
+        {/* History Section */}
+        <section className="mt-12">
+          <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+            History
+          </h2>
+          <div className="space-y-3">
+            {history.length > 0 ? (
+              history.map((item, idx) => (
+                <div
+                  key={item.id_prediksi}
+                  className="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between shadow-sm hover:border-blue-100 transition-all"
+                >
+                  <div className="flex-1">
+                    <p className="text-[13px] font-bold text-gray-700 mb-1">
+                      {idx + 1}. {item.hasil_teks || "Hasil Analisis Kulit"}
+                    </p>
+                    <p className="text-[11px] text-gray-400">
+                      Confidence:{" "}
+                      <span className="text-[#004E98] font-bold">
+                        {(item.confidence * 100).toFixed(1)}%
+                      </span>{" "}
+                      • {new Date(item.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => deleteHistoryItem(item.id_prediksi)}
+                    className="ml-4 p-2 text-gray-300 hover:text-red-600 transition-colors"
+                    title="Hapus Riwayat"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm italic py-4">
+                Belum ada riwayat analisis kulit.
+              </p>
+            )}
+          </div>
+        </section>
       </main>
 
       <Footer />

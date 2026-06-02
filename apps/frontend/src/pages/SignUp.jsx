@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/global/Navbar";
 import Footer from "../components/global/Footer";
 import Button from "../components/global/Button";
 
-const SignUpPage = ({ onLogin }) => {
+const SignUpPage = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -54,75 +55,60 @@ const SignUpPage = ({ onLogin }) => {
   const validate = () => {
     let newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // Password: Min 8, 1 Upper, 1 Lower, 1 Number, 1 Special
+    // Password Regex Terupdate (Mendukung #, _, dll)
     const passRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/;
 
     if (!formData.username) newErrors.username = "Username is required";
     if (formData.dob.length < 10) newErrors.dob = "Format must be DD/MM/YYYY";
     if (!formData.gender) newErrors.gender = "Please select gender";
     if (formData.phone.length < 10)
-      newErrors.phone = "Invalid phone format (min 8 digits after code)";
+      newErrors.phone = "Include country code and min 8 digits";
     if (!emailRegex.test(formData.email))
-      newErrors.email = "Invalid email format (ex: name@gmail.com)";
+      newErrors.email = "Invalid email format";
     if (!passRegex.test(formData.password)) {
       newErrors.password =
         "Min 8 chars, must include uppercase, lowercase, number, and special character";
     }
 
-    console.log("Daftar Error Saat Ini:", newErrors);
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (validate()) {
       try {
-        // Helper: Ubah DD/MM/YYYY ke YYYY-MM-DD agar MySQL tidak error
+        // Format tanggal ke YYYY-MM-DD untuk Database
         const [day, month, year] = formData.dob.split("/");
-        const formattedDate = `${year}-${month}-${day}`; // Sequelize butuh YYYY-MM-DD
+        const formattedDate = `${year}-${month}-${day}`;
 
         const payload = {
-          nama: formData.username, // Sesuai Service
+          nama: formData.username,
           email: formData.email,
           password: formData.password,
           gender: formData.gender,
-          tanggal_lahir: formattedDate, // Sesuai Service
-          telepon: formData.phone, // Sesuai Service
+          tanggal_lahir: formattedDate,
+          telepon: formData.phone,
         };
 
-        const response = await fetch(
-          "http://localhost:5000/api/auth/register",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          },
-        );
+        const response = await axios.post("/api/auth/register", payload);
 
-        const result = await response.json();
-
-        if (response.ok) {
+        if (response.data.status === "success") {
           alert("Sign Up Berhasil! Silakan Sign In.");
           navigate("/signin");
-        } else {
-          alert("Gagal: " + result.message);
         }
       } catch (error) {
-        console.error("Error Koneksi:", error);
-        alert("Gagal terhubung ke Backend Express.");
+        alert(
+          "Gagal: " +
+            (error.response?.data?.message || "Terjadi kesalahan server"),
+        );
       }
     }
   };
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex flex-col font-sans">
-      <Navbar />
       <main className="flex-grow flex flex-col items-center justify-center px-6 py-12">
         <h1 className="text-4xl font-bold text-[#091E42] mb-10 text-center">
           Sign Up
@@ -130,7 +116,6 @@ const SignUpPage = ({ onLogin }) => {
 
         <div className="bg-white w-full max-w-md rounded-xl border border-gray-100 shadow-sm p-8">
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Username */}
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                 Username
@@ -141,7 +126,7 @@ const SignUpPage = ({ onLogin }) => {
                 placeholder="ex ... Elena Rodriguez"
                 value={formData.username}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 rounded-lg border ${errors.username ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#004E98] outline-none text-sm placeholder:italic transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.username ? "border-red-500" : "border-gray-200"} outline-none text-sm`}
               />
               {errors.username && (
                 <p className="text-red-500 text-[11px] mt-1 italic">
@@ -150,7 +135,6 @@ const SignUpPage = ({ onLogin }) => {
               )}
             </div>
 
-            {/* Date of Birth */}
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                 Date of Birth
@@ -161,7 +145,7 @@ const SignUpPage = ({ onLogin }) => {
                 placeholder="DD/MM/YYYY"
                 value={formData.dob}
                 onChange={handleDOBChange}
-                className={`w-full px-4 py-3 rounded-lg border ${errors.dob ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#004E98] outline-none text-sm placeholder:italic transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.dob ? "border-red-500" : "border-gray-200"} outline-none text-sm`}
               />
               {errors.dob && (
                 <p className="text-red-500 text-[11px] mt-1 italic">
@@ -170,7 +154,6 @@ const SignUpPage = ({ onLogin }) => {
               )}
             </div>
 
-            {/* Gender */}
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                 Gender
@@ -179,7 +162,7 @@ const SignUpPage = ({ onLogin }) => {
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 rounded-lg border ${errors.gender ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#004E98] outline-none text-sm bg-white cursor-pointer transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.gender ? "border-red-500" : "border-gray-200"} outline-none text-sm bg-white`}
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -192,7 +175,6 @@ const SignUpPage = ({ onLogin }) => {
               )}
             </div>
 
-            {/* Phone Number */}
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                 Phone Number
@@ -202,7 +184,7 @@ const SignUpPage = ({ onLogin }) => {
                 type="text"
                 value={formData.phone}
                 onChange={handlePhoneChange}
-                className={`w-full px-4 py-3 rounded-lg border ${errors.phone ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#004E98] outline-none text-sm transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.phone ? "border-red-500" : "border-gray-200"} outline-none text-sm`}
               />
               {errors.phone && (
                 <p className="text-red-500 text-[11px] mt-1 italic">
@@ -211,7 +193,6 @@ const SignUpPage = ({ onLogin }) => {
               )}
             </div>
 
-            {/* Email Address */}
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                 Email Address
@@ -222,7 +203,7 @@ const SignUpPage = ({ onLogin }) => {
                 placeholder="ex....elena@example.com"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 rounded-lg border ${errors.email ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#004E98] outline-none text-sm placeholder:italic transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.email ? "border-red-500" : "border-gray-200"} outline-none text-sm`}
               />
               {errors.email && (
                 <p className="text-red-500 text-[11px] mt-1 italic">
@@ -231,7 +212,6 @@ const SignUpPage = ({ onLogin }) => {
               )}
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                 Password
@@ -243,12 +223,12 @@ const SignUpPage = ({ onLogin }) => {
                   placeholder="********"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 pr-12 rounded-lg border ${errors.password ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#004E98] outline-none text-sm transition-all`}
+                  className={`w-full px-4 py-3 pr-12 rounded-lg border ${errors.password ? "border-red-500" : "border-gray-200"} outline-none text-sm`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#004E98]"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
                 >
                   {showPassword ? "👁️" : "👁️‍🗨️"}
                 </button>
