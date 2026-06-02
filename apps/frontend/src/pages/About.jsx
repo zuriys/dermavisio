@@ -5,41 +5,59 @@ import FeatureCard from "../components/cards/FeatureCard";
 import Button from "../components/global/Button";
 
 // Import Assets Tim (Pastikan file ada di src/assets/)
-import rupaImg from "../../assets/rupa.jpg";
-import albertImg from "../../assets/albert.jpg";
-import joImg from "../../assets/jo.jpg";
-import occaImg from "../../assets/occa.jpg";
-import gussakahImg from "../../assets/gussakah.jpg";
-import dianImg from "../../assets/dian.jpg";
+import rupaImg from "../../assets/rupa.jpeg";
+import albertImg from "../../assets/albert.png";
+import joImg from "../../assets/jo.png";
+import occaImg from "../../assets/occa.png";
+import gussakahImg from "../../assets/gussakah.jpeg";
+import dianImg from "../../assets/dian.jpeg";
 
-import melImg from "../../assets/mel.png";
-import bccImg from "../../assets/bcc.png";
-import akiecImg from "../../assets/akiec.png";
-import bklImg from "../../assets/bkl.png";
-import nvImg from "../../assets/nv.png";
-import vascImg from "../../assets/vasc.png";
-import dfImg from "../../assets/df.png";
+import melImg from "../../assets/mel.jpeg";
+import bccImg from "../../assets/bcc.jpeg";
+import akiecImg from "../../assets/akiec.jpeg";
+import bklImg from "../../assets/bkl.jpeg";
+import nvImg from "../../assets/nv.jpeg";
+import vascImg from "../../assets/vasc.jpeg";
+import dfImg from "../../assets/df.jpeg";
 
 const AboutPage = ({ isLoggedIn, onLogout }) => {
   const teamMembers = [
-    { name: "Ni Luh Rupa Sri Astuti", role: "AI Engineer", image: rupaImg },
+    {
+      name: "Ni Luh Rupa Sri Astuti",
+      role: "AI Engineer",
+      image: rupaImg,
+      linkedin: "https://www.linkedin.com/in/ni-luh-rupa-a31058378/",
+    },
     {
       name: "Benedictus Albert Effendi",
       role: "AI Engineer",
       image: albertImg,
+      linkedin: "https://linkedin.com/in/albert-effendi-875814285",
     },
-    { name: "Jonathan Federico Tantoro", role: "Data Scientist", image: joImg },
+    {
+      name: "Jonathan Federico Tantoro",
+      role: "Data Scientist",
+      image: joImg,
+      linkedin: "https://linkedin.com/in/jonathanft",
+    },
     {
       name: "I Gede Abhijana Prayata W.",
       role: "Data Scientist",
       image: occaImg,
+      linkedin: "https://linkedin.com/in/occa-prayata-9b1a5b1b8",
     },
     {
       name: "I Gusti Agus Sakah Aditia",
       role: "FullStack Web Developer",
       image: gussakahImg,
+      linkedin: "https://linkedin.com/in/gussakah",
     },
-    { name: "Dian Resvina", role: "FullStack Web Developer", image: dianImg },
+    {
+      name: "Dian Resvina",
+      role: "FullStack Web Developer",
+      image: dianImg,
+      linkedin: "https://linkedin.com/in/dianresvina",
+    },
   ];
 
   const skinLesions = [
@@ -237,11 +255,16 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
                         "https://via.placeholder.com/400x300?text=No+Photo";
                     }}
                   />
-                  <div className="absolute bottom-3 right-3 bg-[#4B5563] p-1.5 rounded text-white cursor-pointer hover:bg-[#004E98]">
+                  <a
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-3 right-3 bg-[#4B5563] p-1.5 rounded text-white cursor-pointer hover:bg-[#004E98] transition-colors z-20"
+                  >
                     <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                       <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                     </svg>
-                  </div>
+                  </a>
                 </div>
                 <div className="px-1">
                   <h4 className="font-bold text-[#091E42] text-sm">

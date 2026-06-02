@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/global/Navbar";
 import Footer from "../components/global/Footer";
 import Button from "../components/global/Button";
@@ -8,53 +9,139 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  // State untuk Foto Profil
-  const [profileImage, setProfileImage] = useState(null);
+  // --- STATE ---
+  const [userData, setUserData] = useState({
+    nama: "",
+    email: "",
+    gender: "",
+    tanggal_lahir: "",
+    telepon: "",
+    foto: null,
+  });
+  const [profilePreview, setProfilePreview] = useState(null); // Untuk tampilan sementara
+  const [selectedFile, setSelectedFile] = useState(null); // File asli untuk diupload
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // State untuk Daftar Riwayat (History)
-  const [history, setHistory] = useState([
-    {
-      id: 1,
-      text: "The AI model has identified characteristics consistent with a benign growth. No immediate signs of malignancy detected. 98% Confidence",
-    },
-    {
-      id: 2,
-      text: "The AI model has identified characteristics consistent with a benign growth. No immediate signs of malignancy detected. 98% Confidence",
-    },
-  ]);
+  // --- 1. AMBIL DATA DARI DATABASE (MOUNT) ---
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "http://localhost:5001/api/user/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
-  // Fungsi Upload Foto (dari Komputer)
-  const handleUpdatePhoto = () => {
-    fileInputRef.current.click();
-  };
+        if (response.data.status === "success") {
+          const data = response.data.data;
+          setUserData(data);
+
+          // JIKA ADA DATA FOTO, BUAT URL LENGKAPNYA
+          if (data.foto) {
+            // Pastikan path-nya sesuai dengan route static di backend (/uploads/profiles/)
+            setProfilePreview(
+              `http://localhost:5001/uploads/profiles/${data.foto}`,
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Gagal ambil profil:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchProfileData();
+    } else {
+      setLoading(false);
+    }
+  }, [isLoggedIn]);
+
+  // --- 2. LOGIKA PILIH FOTO ---
+  const handleUpdatePhotoClick = () => fileInputRef.current.click();
 
   const onFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setSelectedFile(file); // Simpan file asli
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
+      reader.onloadend = () => setProfilePreview(reader.result); // Tampilkan preview
       reader.readAsDataURL(file);
     }
   };
 
-  // Fungsi Hapus Foto
   const handleRemovePhoto = () => {
-    setProfileImage(null);
+    setProfilePreview(null);
+    setSelectedFile(null);
+    setUserData({ ...userData, foto: null });
   };
 
-  // Fungsi Hapus Riwayat
-  const deleteHistoryItem = (id) => {
-    setHistory(history.filter((item) => item.id !== id));
+  // --- 3. SIMPAN PERUBAHAN (NAMA & FOTO) KE DATABASE ---
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+
+      formData.append("nama", userData.nama);
+      // Jika ada file baru yang dipilih, masukkan ke FormData
+      if (selectedFile) {
+        formData.append("foto", selectedFile);
+      }
+
+      const response = await axios.put(
+        "http://localhost:5001/api/user/profile",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      if (response.data.status === "success") {
+        alert("Profil berhasil diperbarui!");
+        // Update state lokal dengan data terbaru dari server
+        setUserData(response.data.data);
+      }
+    } catch (error) {
+      alert(
+        "Gagal menyimpan: " + (error.response?.data?.message || error.message),
+      );
+    }
   };
+
+  // --- 4. HAPUS RIWAYAT ANALISIS ---
+  const deleteHistoryItem = async (id) => {
+    if (!window.confirm("Hapus riwayat ini?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5001/api/user/history/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Filter state lokal agar langsung hilang dari layar
+      setHistory(history.filter((item) => item.id_prediksi !== id));
+    } catch (error) {
+      alert("Gagal menghapus riwayat");
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center font-sans">
+        Loading Profile...
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex flex-col font-sans">
-      {/* <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} /> */}
-
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-grow max-w-5xl mx-auto w-full px-10 py-8">
-        {/* Tombol Keluar */}
+        {/* Tombol Kembali */}
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
@@ -91,9 +178,9 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 mb-6 flex items-center gap-8">
           <div className="relative">
             <div className="w-24 h-24 bg-[#D1D5DB] rounded-xl flex items-center justify-center overflow-hidden border border-gray-200">
-              {profileImage ? (
+              {profilePreview ? (
                 <img
-                  src={profileImage}
+                  src={profilePreview}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
@@ -102,8 +189,8 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
               )}
             </div>
             <div
-              className="absolute -bottom-2 -right-2 bg-[#004E98] p-2 rounded-lg text-white border-2 border-white shadow-md cursor-pointer"
-              onClick={handleUpdatePhoto}
+              className="absolute -bottom-2 -right-2 bg-[#004E98] p-2 rounded-lg text-white border-2 border-white shadow-md cursor-pointer hover:bg-[#003B73]"
+              onClick={handleUpdatePhotoClick}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +213,6 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
                 />
               </svg>
             </div>
-            {/* Hidden Input File */}
             <input
               type="file"
               ref={fileInputRef}
@@ -143,7 +229,7 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
             </p>
             <div className="flex gap-3">
               <Button
-                onClick={handleUpdatePhoto}
+                onClick={handleUpdatePhotoClick}
                 className="py-2 px-5 text-xs h-auto bg-[#004E98]"
               >
                 Update Photo
@@ -151,7 +237,7 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
               <Button
                 onClick={handleRemovePhoto}
                 variant="outline"
-                className="py-2 px-5 text-xs h-auto border-gray-200 text-gray-600 hover:bg-gray-50"
+                className="py-2 px-5 text-xs h-auto border-gray-200 text-gray-600"
               >
                 Remove
               </Button>
@@ -161,16 +247,19 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
 
         {/* Form Card */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 mb-10">
-          <form className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
+          <form className="space-y-6" onSubmit={handleSaveChanges}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                   Full Name
                 </label>
                 <input
                   type="text"
-                  defaultValue="Dr. Elena Rodriguez"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none text-sm"
+                  value={userData.nama || ""} // SESUAIKAN DENGAN NAMA KOLOM DB
+                  onChange={(e) =>
+                    setUserData({ ...userData, nama: e.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none text-sm"
                 />
               </div>
               <div>
@@ -179,20 +268,23 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
                 </label>
                 <input
                   type="text"
-                  defaultValue="05/12/1988"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none text-sm"
+                  value={userData.tanggal_lahir || ""} // SESUAIKAN DENGAN TANGGAL_LAHIR
+                  readOnly
+                  className="w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 text-sm outline-none"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-6">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                   Gender
                 </label>
                 <input
                   type="text"
-                  defaultValue="Female"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none text-sm"
+                  value={userData.gender || ""} // SESUAIKAN DENGAN GENDER
+                  readOnly
+                  className="w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 text-sm outline-none"
                 />
               </div>
               <div>
@@ -201,36 +293,30 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
                 </label>
                 <input
                   type="text"
-                  defaultValue="elena.rodriguez@example.com"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none text-sm"
+                  value={userData.telepon || ""} // SESUAIKAN DENGAN TELEPON
+                  readOnly
+                  className="w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 text-sm outline-none"
                 />
               </div>
             </div>
+
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                 Email Address
               </label>
               <input
                 type="text"
-                defaultValue="+1 (555) 012-3456"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                defaultValue="********"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#004E98] outline-none text-sm text-gray-400"
+                value={userData.email || ""} // SESUAIKAN DENGAN EMAIL
+                readOnly
+                className="w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 text-sm outline-none"
               />
             </div>
 
             <div className="flex justify-end items-center gap-6 pt-4">
               <button
                 type="button"
-                className="text-gray-600 font-bold hover:text-gray-800 transition-colors text-sm"
+                onClick={() => navigate(-1)}
+                className="text-gray-600 font-bold hover:text-gray-800 text-sm"
               >
                 Cancel
               </button>
@@ -248,17 +334,27 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
           </h2>
           <div className="space-y-3">
             {history.length > 0 ? (
-              history.map((item) => (
+              history.map((item, idx) => (
                 <div
-                  key={item.id}
-                  className="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between shadow-sm"
+                  key={item.id_prediksi}
+                  className="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between shadow-sm hover:border-blue-100 transition-all"
                 >
-                  <p className="text-[12px] text-gray-500 flex-1 leading-relaxed">
-                    {item.id}. {item.text}
-                  </p>
+                  <div className="flex-1">
+                    <p className="text-[13px] font-bold text-gray-700 mb-1">
+                      {idx + 1}. {item.hasil_teks || "Hasil Analisis Kulit"}
+                    </p>
+                    <p className="text-[11px] text-gray-400">
+                      Confidence:{" "}
+                      <span className="text-[#004E98] font-bold">
+                        {(item.confidence * 100).toFixed(1)}%
+                      </span>{" "}
+                      • {new Date(item.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
                   <button
-                    onClick={() => deleteHistoryItem(item.id)}
-                    className="ml-4 p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    onClick={() => deleteHistoryItem(item.id_prediksi)}
+                    className="ml-4 p-2 text-gray-300 hover:text-red-600 transition-colors"
+                    title="Hapus Riwayat"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -278,8 +374,8 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
                 </div>
               ))
             ) : (
-              <p className="text-center text-gray-400 text-sm italic">
-                No history available.
+              <p className="text-gray-400 text-sm italic py-4">
+                Belum ada riwayat analisis kulit.
               </p>
             )}
           </div>

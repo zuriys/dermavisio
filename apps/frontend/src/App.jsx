@@ -67,7 +67,7 @@
 
 //             {/* Halaman Utama (Home) */}
 //         <Route path="/" element={<Home />} />
-        
+
 //         {/* Halaman Analisis */}
 //         <Route path="/analyze" element={<AnalyzePage />} />
 
@@ -77,13 +77,7 @@
 //   );
 // }
 
-
 // export default App;
-
-
-
-
-
 
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -96,22 +90,22 @@ import AnalyzePage from "./pages/Analyze";
 import "./style/index.css";
 
 // Jangan lupa import Navbar jika ingin muncul secara global
-import Navbar from "./components/global/Navbar"; 
+import Navbar from "./components/global/Navbar";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true",
   );
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", "true");
-  };
-
   const handleLogout = () => {
     setIsLoggedIn(false);
     localStorage.removeItem("isLoggedIn");
     window.location.href = "/";
+  };
+  const handleLogin = (token) => {
+    setIsLoggedIn(true);
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("token", token);
   };
 
   return (
@@ -123,24 +117,38 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<HomePage isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
+            element={
+              <HomePage isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+            }
           />
           <Route
             path="/about"
-            element={<AboutPage isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
+            element={
+              <AboutPage isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+            }
           />
           <Route
             path="/analyze"
-            element={<AnalyzePage isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
+            element={
+              <AnalyzePage isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+            }
           />
           <Route
             path="/profile"
-            element={<ProfilePage isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
+            element={
+              <ProfilePage isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+            }
           />
 
           {/* Halaman Auth */}
-          <Route path="/signin" element={<SignInPage onLogin={handleLogin} />} />
-          <Route path="/signup" element={<SignUpPage onLogin={handleLogin} />} />
+          <Route
+            path="/signin"
+            element={<SignInPage onLogin={handleLogin} />}
+          />
+          <Route
+            path="/signup"
+            element={<SignUpPage onLogin={handleLogin} />}
+          />
         </Routes>
 
         {/* --- BAGIAN DI BAWAH INI TADI SALAH DAN HARUS DIHAPUS --- */}
