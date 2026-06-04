@@ -42,7 +42,10 @@ const SignInPage = ({ onLogin }) => {
           password: formData.password,
         };
 
-        const response = await axios.post("/api/auth/login", payload);
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/auth/login`,
+          payload,
+        );
 
         if (response.data.status === "success") {
           onLogin(response.data.token);

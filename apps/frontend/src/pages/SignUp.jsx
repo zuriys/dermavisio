@@ -92,8 +92,10 @@ const SignUpPage = () => {
           telepon: formData.phone,
         };
 
-        const response = await axios.post("/api/auth/register", payload);
-
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/auth/register`,
+          payload,
+        );
         if (response.data.status === "success") {
           alert("Sign Up Berhasil! Silakan Sign In.");
           navigate("/signin");

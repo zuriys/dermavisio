@@ -7,22 +7,27 @@ const connectionString = process.env.MYSQL_URL;
 
 const config = {
   development: {
+    // TAMBAHKAN BARIS INI: prioritaskan URL jika ada
+    url: process.env.MYSQL_URL || null, 
     username: process.env.DB_USER || 'root',
     password: process.env.DB_PASS || '',
     database: process.env.DB_NAME || 'dermavisio',
     host: process.env.DB_HOST || '127.0.0.1',
     port: process.env.DB_PORT || 3306,
     dialect: 'mysql',
-    logging: false
+    logging: false,
+    // Tambahkan ini agar aman saat konek ke cloud
+    dialectOptions: {
+      ssl: process.env.MYSQL_URL ? { rejectUnauthorized: false } : false
+    }
   },
   production: {
-    // Railway/Cloud setup
-    use_env_variable: 'MYSQL_URL', // Memberitahu CLI untuk pakai MYSQL_URL di server
+    use_env_variable: 'MYSQL_URL',
     dialect: 'mysql',
     logging: false,
     dialectOptions: {
       ssl: {
-        rejectUnauthorized: false // Beberapa cloud provider mewajibkan ini
+        rejectUnauthorized: false
       }
     }
   }

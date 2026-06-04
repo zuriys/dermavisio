@@ -65,10 +65,7 @@ export default function AnalyzePage() {
 
       // Tembak ke EXPRESS (Bukan Flask!)
       // ... di dalam handleAnalyze ...
-      const response = await axios.post(
-        "http://localhost:5001/api/predict",
-        formData,
-      );
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/predict`, formData);
       const resultData = response.data.data;
 
       setResult({

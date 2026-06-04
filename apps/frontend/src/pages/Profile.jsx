@@ -23,57 +23,51 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/user/profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
+        if (response.data.status === "success") {
+          const data = response.data.data;
 
-useEffect(() => {
-  const fetchProfileData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "http://localhost:5001/api/user/profile",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+          // 1. Set Data User (nama, email, dll)
+          setUserData(data);
 
-      if (response.data.status === "success") {
-        const data = response.data.data;
-        
-        // 1. Set Data User (nama, email, dll)
-        setUserData(data);
+          // 2. Set History (Daftar riwayat deteksi)
+          if (data.history) {
+            setHistory(data.history);
+          }
 
-        // 2. Set History (Daftar riwayat deteksi)
-        if (data.history) {
-          setHistory(data.history);
+          // 3. SET FOTO PROFIL DENGAN PATH DINAMIS
+          if (data.foto) {
+            // Menambahkan timestamp (?t=...) opsional agar browser tidak menyimpan cache lama
+            const photoUrl = `${import.meta.env.VITE_API_URL}/uploads/profiles/${data.foto}`;
+            setProfilePreview(photoUrl);
+          } else {
+            // Jika tidak ada foto di DB, biarkan null atau set ke default avatar
+            setProfilePreview(null);
+          }
         }
-
-        // 3. SET FOTO PROFIL DENGAN PATH DINAMIS
-        if (data.foto) {
-          // Menambahkan timestamp (?t=...) opsional agar browser tidak menyimpan cache lama
-          const photoUrl = `http://localhost:5001/uploads/profiles/${data.foto}`;
-          setProfilePreview(photoUrl);
-        } else {
-          // Jika tidak ada foto di DB, biarkan null atau set ke default avatar
-          setProfilePreview(null);
-        }
+      } catch (error) {
+        console.error("Gagal ambil profil:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Gagal ambil profil:", error);
-    } finally {
+    };
+
+    if (isLoggedIn) {
+      fetchProfileData();
+    } else {
       setLoading(false);
     }
-  };
-
-  if (isLoggedIn) {
-    fetchProfileData();
-  } else {
-    setLoading(false);
-  }
-}, [isLoggedIn]);
-
-
-
-
+  }, [isLoggedIn]);
 
   // --- 2. LOGIKA PIL
   // IH FOTO ---
@@ -109,7 +103,7 @@ useEffect(() => {
       }
 
       const response = await axios.put(
-        "http://localhost:5001/api/user/profile",
+        `${import.meta.env.VITE_API_URL}/api/user/profile`, // Ganti localhost
         formData,
         {
           headers: {
@@ -136,9 +130,12 @@ useEffect(() => {
     if (!window.confirm("Hapus riwayat ini?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5001/api/user/history/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/user/history/${id}`, // Ganti localhost
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       // Filter state lokal agar langsung hilang dari layar
       setHistory(history.filter((item) => item.id_prediksi !== id));
     } catch (error) {
