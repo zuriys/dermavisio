@@ -65,7 +65,7 @@ export default function Home({ isLoggedIn }) {
         </section>
 
         {/* 3. HOW IT WORKS SECTION */}
-        <HowItWorks />
+        <HowItWorks isLoggedIn={isLoggedIn} /> 
         <CTABanner isLoggedIn={isLoggedIn} /> 
 
         {/* 4. CTA BANNER SECTION */}

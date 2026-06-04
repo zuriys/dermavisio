@@ -3,6 +3,7 @@ import Navbar from "../components/global/Navbar";
 import Footer from "../components/global/Footer";
 import FeatureCard from "../components/cards/FeatureCard";
 import Button from "../components/global/Button";
+import HowItWorkswnb from "../components/sections/HowItWorkswnb";
 
 // Import Assets Tim (Pastikan file ada di src/assets/)
 import rupaImg from "../../assets/rupa.jpeg";
@@ -181,7 +182,14 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
         </section>
 
         {/* How It Works */}
-        <section className="py-20 text-center bg-[#F9FBFF]">
+
+           <HowItWorkswnb isLoggedIn={isLoggedIn} />
+
+
+
+
+
+        {/* <section className="py-20 text-center bg-[#F9FBFF]">
           <h2 className="text-3xl font-bold text-[#091E42] mb-4">
             How it Works
           </h2>
@@ -230,7 +238,7 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
             <div className="absolute top-8 left-[15%] right-[15%] h-[1px] border-t border-dashed border-gray-200"></div>
           </div>
           
-        </section>
+        </section> */}
 
         {/* Meet The Team */}
         <section className="container mx-auto px-10 py-24">
