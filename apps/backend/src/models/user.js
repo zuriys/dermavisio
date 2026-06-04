@@ -40,8 +40,8 @@ const User = db.define(
     },
   },
   {
-  tableName: "pengguna", // UBAH DARI "users" MENJADI "pengguna"
-  timestamps: true,      // Aktifkan ini jika di migrasi ada createdAt/updatedAt
+  tableName: "pengguna", 
+  timestamps: true,      
 },);
 
 
