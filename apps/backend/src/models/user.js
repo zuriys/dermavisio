@@ -40,9 +40,15 @@ const User = db.define(
     },
   },
   {
-    tableName: "users", // Pastikan sesuai dengan nama tabel di MySQL
-    timestamps: false, // Set true jika Anda punya kolom createdAt & updatedAt
-  },
-);
+  tableName: "pengguna", // UBAH DARI "users" MENJADI "pengguna"
+  timestamps: true,      // Aktifkan ini jika di migrasi ada createdAt/updatedAt
+},);
 
+
+User.associate = (models) => {
+  User.hasMany(models.Prediction, {
+    foreignKey: 'id_pengguna',
+    as: 'history' // Nama alias untuk memanggil riwayat
+  });
+};
 module.exports = User;

@@ -3,6 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    // Gabungkan createTable dan kolom foto di sini
     await queryInterface.createTable('pengguna', {
       id_pengguna: {
         allowNull: false,
@@ -28,11 +29,16 @@ module.exports = {
         allowNull: true
       },
       tanggal_lahir: {
-        type: Sequelize.DATEONLY, // Hanya tanggal (YYYY-MM-DD)
+        type: Sequelize.DATEONLY,
         allowNull: true
       },
       telepon: {
         type: Sequelize.STRING(20),
+        allowNull: true
+      },
+      // MASUKKAN FOTO LANGSUNG DI SINI
+      foto: {
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       createdAt: {
@@ -47,6 +53,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
+    // Cukup satu perintah drop table untuk menghapus semuanya
     await queryInterface.dropTable('pengguna');
   }
 };

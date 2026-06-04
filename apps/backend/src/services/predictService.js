@@ -36,19 +36,22 @@ const runMLAndSave = async (imageBuffer, fileName, userId) => {
   form.append("image", imageBuffer, fileName);
 
   const mlResponse = await axios.post(
-    "http://localhost:8000/predict-process",
+    "http://127.0.0.1:8000/predict-process",
     form,
     {
       headers: form.getHeaders(),
     },
   );
 
-  const { label, confidence } = mlResponse.data;
+
+  console.log("Respon dari Flask:", mlResponse.data);
+
+  const { label_index, confidence } = mlResponse.data;
 
   // 2. Simpan ke MySQL via Sequelize
   const savedData = await Prediction.create({
     id_pengguna: userId,
-    hasil: label,
+    hasil: label_index,
     confidence: confidence,
     image_url: fileName, // Simpan nama filenya
   });

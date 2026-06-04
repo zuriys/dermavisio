@@ -1,5 +1,7 @@
 const User = require("../models/user");
-const { Prediction } = require("../models/prediction");
+const Prediction = require("../models/prediction");
+const { getLabelInfo } = require("../utils/labelMapper");
+
 
 const getUserProfile = async (userId) => {
   return await User.findByPk(userId, {
@@ -14,9 +16,19 @@ const updateUserProfile = async (userId, updateData) => {
 };
 
 const getUserHistory = async (userId) => {
-  return await Prediction.findAll({
+  const rawHistory = await Prediction.findAll({
     where: { id_pengguna: userId },
-    order: [["created_at", "DESC"]], // Riwayat terbaru di atas
+    order: [["createdAt", "DESC"]],
+  });
+
+  return rawHistory.map((item) => {
+    const info = getLabelInfo(item.hasil); // Memakai labelMapper.js
+    return {
+      ...item.toJSON(),
+      hasil_teks: info.name, // Agar di React muncul "Melanoma" dsb
+      confidence: item.confidence,
+      created_at: item.createdAt
+    };
   });
 };
 

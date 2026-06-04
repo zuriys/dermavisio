@@ -24,44 +24,96 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
   const [loading, setLoading] = useState(true);
 
   // --- 1. AMBIL DATA DARI DATABASE (MOUNT) ---
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          "http://localhost:5001/api/user/profile",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+  // useEffect(() => {
+  //   const fetchProfileData = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const response = await axios.get(
+  //         "http://localhost:5001/api/user/profile",
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         },
+  //       );
 
-        if (response.data.status === "success") {
-          const data = response.data.data;
-          setUserData(data);
+  //       if (response.data.status === "success") {
+  //         const data = response.data.data;
+  //         setUserData(data);
 
-          // JIKA ADA DATA FOTO, BUAT URL LENGKAPNYA
-          if (data.foto) {
-            // Pastikan path-nya sesuai dengan route static di backend (/uploads/profiles/)
-            setProfilePreview(
-              `http://localhost:5001/uploads/profiles/${data.foto}`,
-            );
-          }
+  //         // JIKA ADA DATA FOTO, BUAT URL LENGKAPNYA
+  //         if (data.foto) {
+  //           // Pastikan path-nya sesuai dengan route static di backend (/uploads/profiles/)
+  //           setProfilePreview(
+  //             `http://localhost:5001/uploads/profiles/${data.foto}`,
+  //           );
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Gagal ambil profil:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (isLoggedIn) {
+  //     fetchProfileData();
+  //   } else {
+  //     setLoading(false);
+  //   }
+  // }, [isLoggedIn]);
+
+
+useEffect(() => {
+  const fetchProfileData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        "http://localhost:5001/api/user/profile",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (response.data.status === "success") {
+        const data = response.data.data;
+        
+        // 1. Set Data User (nama, email, dll)
+        setUserData(data);
+
+        // 2. Set History (Daftar riwayat deteksi)
+        if (data.history) {
+          setHistory(data.history);
         }
-      } catch (error) {
-        console.error("Gagal ambil profil:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    if (isLoggedIn) {
-      fetchProfileData();
-    } else {
+        // 3. SET FOTO PROFIL DENGAN PATH DINAMIS
+        if (data.foto) {
+          // Menambahkan timestamp (?t=...) opsional agar browser tidak menyimpan cache lama
+          const photoUrl = `http://localhost:5001/uploads/profiles/${data.foto}`;
+          setProfilePreview(photoUrl);
+        } else {
+          // Jika tidak ada foto di DB, biarkan null atau set ke default avatar
+          setProfilePreview(null);
+        }
+      }
+    } catch (error) {
+      console.error("Gagal ambil profil:", error);
+    } finally {
       setLoading(false);
     }
-  }, [isLoggedIn]);
+  };
 
-  // --- 2. LOGIKA PILIH FOTO ---
+  if (isLoggedIn) {
+    fetchProfileData();
+  } else {
+    setLoading(false);
+  }
+}, [isLoggedIn]);
+
+
+
+
+
+  // --- 2. LOGIKA PIL
+  // IH FOTO ---
   const handleUpdatePhotoClick = () => fileInputRef.current.click();
 
   const onFileChange = (e) => {

@@ -6,9 +6,9 @@ import Button from "../components/global/Button";
 
 // Import Assets Tim (Pastikan file ada di src/assets/)
 import rupaImg from "../../assets/rupa.jpeg";
-import albertImg from "../../assets/albert.png";
-import joImg from "../../assets/jo.png";
-import occaImg from "../../assets/occa.png";
+import albertImg from "../../assets/albert.jpeg";
+import joImg from "../../assets/jo.jpeg";
+import occaImg from "../../assets/occa.jpeg";
 import gussakahImg from "../../assets/gussakah.jpeg";
 import dianImg from "../../assets/dian.jpeg";
 
@@ -44,7 +44,7 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
       name: "I Gede Abhijana Prayata W.",
       role: "Data Scientist",
       image: occaImg,
-      linkedin: "https://linkedin.com/in/occa-prayata-9b1a5b1b8",
+      linkedin: "https://www.linkedin.com/in/occawistara/",
     },
     {
       name: "I Gusti Agus Sakah Aditia",
@@ -133,7 +133,7 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
             />
             <FeatureCard
               icon="📈"
-              title="95%+ Accuracy"
+              title="85%+ Accuracy"
               description="Telah diverifikasi berdasarkan kumpulan data dan tolak ukur dermatologi profesional."
             />
             <FeatureCard
@@ -229,9 +229,7 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
             ))}
             <div className="absolute top-8 left-[15%] right-[15%] h-[1px] border-t border-dashed border-gray-200"></div>
           </div>
-          <Button className="mx-auto px-10 bg-[#004E98]">
-            Selengkapnya <span className="ml-2">→</span>
-          </Button>
+          
         </section>
 
         {/* Meet The Team */}

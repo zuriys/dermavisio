@@ -1,5 +1,5 @@
 const predictService = require('../services/predictService');
-const { mapLabel } = require('../utils/labelMapper'); // Pastikan nama fungsinya sesuai di labelMapper.js
+const { getLabelInfo  } = require('../utils/labelMapper'); // Pastikan nama fungsinya sesuai di labelMapper.js
 
 const handlePredict = async (req, res) => {
     try {
@@ -19,7 +19,7 @@ const handlePredict = async (req, res) => {
         );
         
         // 3. Terjemahkan angka hasil DB ke teks menggunakan Mapper
-        const labelInfo = mapLabel(result.hasil); 
+        const labelInfo = getLabelInfo(result.hasil); 
 
         // 4. Kirim respon sukses ke React
         res.status(200).json({

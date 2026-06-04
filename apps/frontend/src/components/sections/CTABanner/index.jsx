@@ -58,15 +58,7 @@ export default function CTABanner({ isLoggedIn }) {
                   <Upload className="w-6 h-6 transition-transform group-hover:-translate-y-1" />
                   Mulai Unggah Foto
                 </button>
-
-                {/* Tombol Sekunder */}
-                <button 
-                  onClick={() => navigate('/about')}
-                  className="flex items-center gap-2 text-white/80 hover:text-white font-bold transition-colors"
-                >
-                  Pelajari Teknologi
-                  <ArrowRight className="w-5 h-5" />
-                </button>
+                
               </div>
 
               {/* Info Tambahan */}

@@ -9,4 +9,13 @@ const Prediction = db.define('Prediction', {
   image_url: { type: DataTypes.STRING }
 }, { tableName: 'prediksi', timestamps: true });
 
+
+Prediction.associate = (models) => {
+  Prediction.belongsTo(models.User, {
+    foreignKey: 'id_pengguna',
+    as: 'pemilik'
+  });
+};
+
+
 module.exports = Prediction;
