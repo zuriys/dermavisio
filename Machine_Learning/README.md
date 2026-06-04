@@ -1,0 +1,1 @@
+"Folder ini berisi model AI untuk klasifikasi 7 jenis kanker kulit (HAM10000). Model dibangun menggunakan MobileNetV2 dengan akurasi validasi ~74% dan MAE < 0.12. Model yang digunakan untuk produksi adalah best_skin_cancer_model.keras."
