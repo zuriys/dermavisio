@@ -183,62 +183,8 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
 
         {/* How It Works */}
 
-           <HowItWorkswnb isLoggedIn={isLoggedIn} />
+        <HowItWorkswnb isLoggedIn={isLoggedIn} />
 
-
-
-
-
-        {/* <section className="py-20 text-center bg-[#F9FBFF]">
-          <h2 className="text-3xl font-bold text-[#091E42] mb-4">
-            How it Works
-          </h2>
-          <p className="text-gray-400 text-sm mb-16">
-            Tiga langkah mudah untuk analisis kulit berkualitas profesional.
-          </p>
-          <div className="flex justify-center items-start max-w-5xl mx-auto relative mb-12">
-            {[
-              {
-                step: "01",
-                title: "Upload Image",
-                icon: "📷",
-                desc: "Unggah foto area kulit yang jelas dengan aman.",
-              },
-              {
-                step: "02",
-                title: "AI Processing",
-                icon: "🧠",
-                desc: "Arsitektur CNN kami menganalisis pola pada level mikroskopik.",
-              },
-              {
-                step: "03",
-                title: "Get Results",
-                icon: "📋",
-                desc: "Dapatkan laporan skrining terperinci beserta skor kepercayaan.",
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center w-1/3 px-4 z-10"
-              >
-                <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 shadow-sm flex items-center justify-center mb-4 text-[#004E98] text-2xl">
-                  {item.icon}
-                </div>
-                <p className="text-[10px] font-bold text-[#004E98] uppercase tracking-widest mb-1">
-                  Step {item.step}
-                </p>
-                <h4 className="font-bold text-gray-800 text-sm mb-2">
-                  {item.title}
-                </h4>
-                <p className="text-[10px] text-gray-400 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-            <div className="absolute top-8 left-[15%] right-[15%] h-[1px] border-t border-dashed border-gray-200"></div>
-          </div>
-          
-        </section> */}
 
         {/* Meet The Team */}
         <section className="container mx-auto px-10 py-24">

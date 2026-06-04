@@ -23,43 +23,6 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- 1. AMBIL DATA DARI DATABASE (MOUNT) ---
-  // useEffect(() => {
-  //   const fetchProfileData = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       const response = await axios.get(
-  //         "http://localhost:5001/api/user/profile",
-  //         {
-  //           headers: { Authorization: `Bearer ${token}` },
-  //         },
-  //       );
-
-  //       if (response.data.status === "success") {
-  //         const data = response.data.data;
-  //         setUserData(data);
-
-  //         // JIKA ADA DATA FOTO, BUAT URL LENGKAPNYA
-  //         if (data.foto) {
-  //           // Pastikan path-nya sesuai dengan route static di backend (/uploads/profiles/)
-  //           setProfilePreview(
-  //             `http://localhost:5001/uploads/profiles/${data.foto}`,
-  //           );
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Gagal ambil profil:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (isLoggedIn) {
-  //     fetchProfileData();
-  //   } else {
-  //     setLoading(false);
-  //   }
-  // }, [isLoggedIn]);
 
 
 useEffect(() => {
