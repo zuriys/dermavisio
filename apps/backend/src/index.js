@@ -29,7 +29,7 @@ const PORT = process.env.PORT || 5001;
 
 db.sync()
 .then(() => {
-  app.listen(PORT, () => {
+  app.listen(PORT,"0.0.0.0", () => {
     console.log(`🚀 Server Express running on http://localhost:${PORT}`);
   });
 })

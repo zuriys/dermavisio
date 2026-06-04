@@ -8,12 +8,14 @@ const runMLAndSave = async (imageBuffer, fileName, userId) => {
   form.append("image", imageBuffer, fileName);
 
   const mlResponse = await axios.post(
-    "http://127.0.0.1:8000/predict-process",
+    process.env.FLASK_ML_URL,
     form,
     {
       headers: form.getHeaders(),
     },
   );
+
+
 
 
   console.log("Respon dari Flask:", mlResponse.data);
