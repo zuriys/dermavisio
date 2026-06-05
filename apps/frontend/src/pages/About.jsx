@@ -30,7 +30,7 @@ import {
   ArrowRight, 
   Mail, 
   Globe 
-} from "lucide-react"
+} from "lucide-react";
 
 const AboutPage = ({ isLoggedIn, onLogout }) => {
   const teamMembers = [
@@ -344,7 +344,7 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
                 
                 <div className="flex gap-4">
                    <a href={member.linkedin} className="p-3 bg-slate-50 rounded-full text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
-                      <LinkedIn size={18} />
+                      <Linkedin size={18} />
                    </a>
                    <a href="#" className="p-3 bg-slate-50 rounded-full text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
                       <Mail size={18} />
