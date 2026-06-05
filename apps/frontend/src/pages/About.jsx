@@ -117,136 +117,7 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
     },
   ];
 
-  //   return (
-  //     <div className="min-h-screen bg-white flex flex-col font-sans">
-  //       {/* <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} /> */}
-
-  //       <main className="flex-grow">
-  //         {/* Header */}
-  //         <section className="container mx-auto px-10 py-16 text-center">
-  //           <h1 className="text-4xl font-extrabold text-[#091E42] mb-8">
-  //             About <span className="text-[#004E98]">DermaVisio</span>
-  //           </h1>
-  //           <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl border border-gray-50 shadow-sm text-sm text-gray-500 italic">
-  //             DermaVisio adalah aplikasi berbasis Artificial Intelligence yang
-  //             dirancang untuk membantu deteksi dini lesi kulit melalui analisis
-  //             citra dermatoskopi menggunakan teknologi Convolutional Neural
-  //             Network (CNN).
-  //           </div>
-  //         </section>
-
-  //         {/* Feature Cards */}
-  //         <section className="container mx-auto px-10 mb-16">
-  //           <div className="grid grid-cols-3 gap-6">
-  //             <FeatureCard
-  //               icon="⚠️"
-  //               title="Educational Use Only"
-  //               description="AI ini memberikan saran untuk pemeriksaan awal, bukan diagnosis medis akhir."
-  //             />
-  //             <FeatureCard
-  //               icon="📈"
-  //               title="85%+ Accuracy"
-  //               description="Telah diverifikasi berdasarkan kumpulan data dan tolak ukur dermatologi profesional."
-  //             />
-  //             <FeatureCard
-  //               icon="🛡️"
-  //               title="Secure & Private"
-  //               description="Enkripsi end-to-end untuk semua gambar yang diunggah dan data pasien."
-  //             />
-  //           </div>
-  //         </section>
-
-  //         {/* NEW SECTION: 7 Klasifikasi Lesi Kulit (Sesuai input_file_11.png) */}
-  //         <section className="container mx-auto px-10 mb-20 space-y-6">
-  //           <h2 className="text-center text-2xl font-bold text-[#091E42] mb-10">
-  //             Klasifikasi Lesi Kulit
-  //           </h2>
-  //           {skinLesions.map((lesion, idx) => (
-  //             <div
-  //               key={idx}
-  //               className="flex items-center gap-8 max-w-5xl mx-auto group"
-  //             >
-  //               {/* Box Gambar Penyakit */}
-  //               <div className="w-24 h-24 shrink-0 bg-[#F9FAFB] rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
-  //                 <img
-  //                   src={lesion.image}
-  //                   alt={lesion.name}
-  //                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-  //                   onError={(e) => {
-  //                     e.target.src =
-  //                       "https://via.placeholder.com/150?text=No+Img";
-  //                   }}
-  //                 />
-  //               </div>
-
-  //               {/* Box Informasi */}
-  //               <div className="flex-1 bg-white p-6 rounded-xl border border-gray-100 shadow-sm transition-all group-hover:border-[#004E98]/30 group-hover:shadow-md">
-  //                 <h4 className="font-bold text-[#004E98] mb-1">
-  //                   {lesion.id}: {lesion.name}
-  //                 </h4>
-  //                 <p className="text-xs text-gray-500 leading-relaxed">
-  //                   {lesion.desc}
-  //                 </p>
-  //               </div>
-  //             </div>
-  //           ))}
-  //         </section>
-
-  //         {/* How It Works */}
-
-  //         <HowItWorkswnb isLoggedIn={isLoggedIn} />
-
-  //         {/* Meet The Team */}
-  //         <section className="container mx-auto px-10 py-24">
-  //           <h2 className="text-3xl font-bold text-[#091E42] text-center mb-16">
-  //             Meet The Team
-  //           </h2>
-  //           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-  //             {teamMembers.map((member, index) => (
-  //               <div
-  //                 key={index}
-  //                 className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all"
-  //               >
-  //                 <div className="relative aspect-[4/3] bg-[#F9FAFB] rounded-lg border border-dashed border-[#D1D9E6] flex items-center justify-center mb-4 overflow-hidden group">
-  //                   <img
-  //                     src={member.image}
-  //                     alt={member.name}
-  //                     className="w-full h-full object-cover transition-transform group-hover:scale-105"
-  //                     onError={(e) => {
-  //                       e.target.src =
-  //                         "https://via.placeholder.com/400x300?text=No+Photo";
-  //                     }}
-  //                   />
-  //                   <a
-  //                     href={member.linkedin}
-  //                     target="_blank"
-  //                     rel="noopener noreferrer"
-  //                     className="absolute bottom-3 right-3 bg-[#4B5563] p-1.5 rounded text-white cursor-pointer hover:bg-[#004E98] transition-colors z-20"
-  //                   >
-  //                     <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-  //                       <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-  //                     </svg>
-  //                   </a>
-  //                 </div>
-  //                 <div className="px-1">
-  //                   <h4 className="font-bold text-[#091E42] text-sm">
-  //                     {member.name}
-  //                   </h4>
-  //                   <p className="text-gray-400 text-[11px] font-medium">
-  //                     {member.role}
-  //                   </p>
-  //                 </div>
-  //               </div>
-  //             ))}
-  //           </div>
-  //         </section>
-  //       </main>
-
-  //       <Footer />
-  //     </div>
-  //   );
-  // };
-
+ 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <main className="flex-grow">
@@ -342,9 +213,8 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
         <section className="container mx-auto px-10 py-24">
           //{" "}
           <h2 className="text-3xl font-bold text-[#091E42] text-center mb-16">
-            // Meet The Team //{" "}
+           Meet The Team 
           </h2>
-          //{" "}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {teamMembers.map((member, index) => (
               <div
