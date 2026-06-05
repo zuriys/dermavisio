@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ArrowLeft, Camera, Trash2, Activity } from "lucide-react";
 import Navbar from "../components/global/Navbar";
 import Footer from "../components/global/Footer";
 import Button from "../components/global/Button";
