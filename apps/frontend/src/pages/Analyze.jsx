@@ -61,11 +61,21 @@ export default function AnalyzePage() {
       const croppedImageBlob = await get255CroppedImg(image, pixels);
       const formData = new FormData();
       formData.append("image", croppedImageBlob, "skin.jpg");
-      formData.append("userId", 1); // Sementara hardcode ID User atau ambil dari state auth
+      const currentUserId = localStorage.getItem("userId");
 
-      // Tembak ke EXPRESS (Bukan Flask!)
+      if (!currentUserId) {
+        alert("Sesi login tidak ditemukan. Silakan login kembali.");
+        navigate("/signin");
+        return;
+      }
+
+      formData.append("userId", currentUserId);
+
       // ... di dalam handleAnalyze ...
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/predict`, formData);
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/predict`,
+        formData,
+      );
       const resultData = response.data.data;
 
       setResult({
@@ -177,7 +187,7 @@ export default function AnalyzePage() {
                 onClick={handleAnalyze}
                 className="px-10 py-3 bg-blue-800 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-blue-900 transition-colors"
               >
-                Confirm & Analyze 
+                Confirm & Analyze
               </button>
             </div>
           )}
@@ -191,8 +201,6 @@ export default function AnalyzePage() {
               </h2>
             </div>
           )}
-
-         
 
           {status === "result" && result && (
             <div className="animate-in fade-in slide-in-from-bottom-10 duration-1000 max-w-7xl mx-auto">
