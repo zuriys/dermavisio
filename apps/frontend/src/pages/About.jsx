@@ -21,6 +21,17 @@ import nvImg from "../../assets/nv.jpeg";
 import vascImg from "../../assets/vasc.jpeg";
 import dfImg from "../../assets/df.jpeg";
 
+import { 
+  BrainCircuit, 
+  ShieldCheck, 
+  Target, 
+  Linkedin, 
+  Activity, 
+  ArrowRight, 
+  Mail, 
+  Globe 
+} from "lucide-react"
+
 const AboutPage = ({ isLoggedIn, onLogout }) => {
   const teamMembers = [
     {
