@@ -36,7 +36,6 @@ const SignInPage = ({ onLogin }) => {
     e.preventDefault();
     if (validate()) {
       try {
-        // Backend butuh 'email' dan 'password'
         const payload = {
           email: formData.email,
           password: formData.password,
@@ -48,15 +47,27 @@ const SignInPage = ({ onLogin }) => {
         );
 
         if (response.data.status === "success") {
-          onLogin(response.data.token);
+          // --- TAMBAHKAN LOGIKA PENYIMPANAN DI SINI ---
+          const token = response.data.token;
+          const user = response.data.data; // Mengambil data user dari backend
+
+          // Simpan ke LocalStorage agar bisa dibaca oleh Analyze.jsx dan Profile.jsx
+          localStorage.setItem("token", token);
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("userId", user.id); // Simpan ID User (PENTING!)
+
+          // Jalankan fungsi onLogin dari App.jsx
+          onLogin(token);
+          
           navigate("/");
         }
       } catch (error) {
+        console.error("Login Error:", error);
         alert(error.response?.data?.message || "Login failed");
       }
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex flex-col font-sans">
       <main className="flex-grow flex flex-col items-center justify-center px-6 py-12">
