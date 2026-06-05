@@ -8,7 +8,7 @@ router.use(authMiddleware);
 
 router.get("/profile", userHandler.getProfile);
 router.put("/profile", userHandler.updateProfile);
-router.get("/history/:id", userHandler.getHistory);
+router.get("/history/", userHandler.getHistory);
 router.delete("/history/:id", userHandler.removeHistory);
 
 module.exports = router;

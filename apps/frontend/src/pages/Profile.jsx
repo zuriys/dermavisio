@@ -48,7 +48,7 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
           // 3. SET FOTO PROFIL DENGAN PATH DINAMIS
           if (data.foto) {
             // Menambahkan timestamp (?t=...) opsional agar browser tidak menyimpan cache lama
-            const photoUrl = `${import.meta.env.VITE_API_URL}/uploads/profiles/${data.foto}`;
+            const photoUrl = `${import.meta.env.VITE_API_URL}/uploads/profiles/${data.foto}?t=${new Date().getTime()}`;
             setProfilePreview(photoUrl);
           } else {
             // Jika tidak ada foto di DB, biarkan null atau set ke default avatar
@@ -124,6 +124,8 @@ const ProfilePage = ({ isLoggedIn, onLogout }) => {
       );
     }
   };
+
+
 
   // --- 4. HAPUS RIWAYAT ANALISIS ---
   const deleteHistoryItem = async (id) => {

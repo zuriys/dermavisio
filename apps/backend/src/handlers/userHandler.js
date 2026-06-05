@@ -78,14 +78,39 @@ const updateProfile = async (req, res) => {
 
 
 
+// const getHistory = async (req, res) => {
+//   try {
+//     const history = await userService.getUserHistory(req.user.id);
+//     res.json({ status: "success", data: history });
+//   } catch (error) {
+//     res.status(500).json({ status: "fail", message: error.message });
+//   }
+// };
+
+
 const getHistory = async (req, res) => {
   try {
-    const history = await userService.getUserHistory(req.user.id);
-    res.json({ status: "success", data: history });
+    // AMBIL DARI TOKEN (req.user), BUKAN DARI URL (req.params)
+    const userId = req.user.id; 
+
+    const history = await userService.getUserHistory(userId);
+    
+    res.json({ 
+      status: "success", 
+      data: history 
+    });
   } catch (error) {
     res.status(500).json({ status: "fail", message: error.message });
   }
 };
+
+
+
+
+
+
+
+
 
 const removeHistory = async (req, res) => {
   try {
