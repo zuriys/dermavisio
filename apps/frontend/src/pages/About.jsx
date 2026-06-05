@@ -322,7 +322,7 @@ const AboutPage = ({ isLoggedIn, onLogout }) => {
 
         {/* --- 4. HOW IT WORKS --- */}
         <div className="bg-slate-50">
-           <HowItWorks isLoggedIn={isLoggedIn} />
+           <HowItWorkswnb isLoggedIn={isLoggedIn} />
         </div>
 
         {/* --- 5. MEET THE TEAM (Premium Cards) --- */}
